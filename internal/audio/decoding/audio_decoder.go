@@ -7,10 +7,25 @@ import (
 	"strings"
 )
 
+type BitDepth int
+
+const (
+	Format16BitInt = iota
+	Format32BitFloat
+	FormatUnsigned8BitInt
+)
+
 // AudioDecoder defines an interface for decoding various audio formats
 type AudioDecoder interface {
 	// Decode converts the digital bitstream/format to [io.Reader] for the oto backend.
-	Decode(fileName string) (io.Reader, int, error)
+	Decode(fileName string) (*DecodedAudio, error)
+}
+
+type DecodedAudio struct {
+	SampleRate int
+	BitDepth   BitDepth
+	Channels   int
+	Data       io.Reader
 }
 
 // NewAudioDecoder creates a new [AudioDecoder] based on the format of the audio input.

@@ -3,7 +3,6 @@ package decoding
 import (
 	"bytes"
 	"fmt"
-	"io"
 	"os"
 
 	"github.com/hajimehoshi/go-mp3"
@@ -15,17 +14,22 @@ type Mp3Decoder struct{}
 
 // Decode decodes mp3 format audio files.
 //
-// It takes the file name as a string parameter and returns an [io.Reader] and any error
-// encountered while decoding.
-func (decoder *Mp3Decoder) Decode(fileName string) (io.Reader, int, error) {
+// It takes the file name as a string parameter and returns a pointer to a [DecodedAudio]
+// and any error encountered while decoding.
+func (decoder *Mp3Decoder) Decode(fileName string) (*DecodedAudio, error) {
 	fileBytes, err := os.ReadFile(fileName)
 	if err != nil {
-		return nil, -1, fmt.Errorf("failed to read file %s: %v", fileName, err.Error())
+		return nil, fmt.Errorf("failed to read file %s: %v", fileName, err.Error())
 	}
 	bytesReader := bytes.NewReader(fileBytes)
 	decodedMp3, err := mp3.NewDecoder(bytesReader)
 	if err != nil {
-		return nil, -1, fmt.Errorf("failed to decode mp3 file %s: %v", fileName, err.Error())
+		return nil, fmt.Errorf("failed to decode mp3 file %s: %v", fileName, err.Error())
 	}
-	return decodedMp3, decodedMp3.SampleRate(), nil
+	return &DecodedAudio{
+		SampleRate: decodedMp3.SampleRate(),
+		BitDepth:   Format16BitInt,
+		Channels:   2,
+		Data:       decodedMp3,
+	}, nil
 }
