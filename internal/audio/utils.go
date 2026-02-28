@@ -5,6 +5,7 @@ import (
 	"strings"
 )
 
+// extractFileFormat extracts the file format of the audio from filename.
 func extractFileFormat(fileName string) string {
 	ext := filepath.Ext(fileName)
 	if ext == "" {

@@ -6,6 +6,8 @@ type AudioPlayer interface {
 	Play()
 }
 
+// NewAudioPlayer accepts filename and an optional format parameter for creating an audio player
+// backend for use. For now it defaults to oto. Will extend later.
 func NewAudioPlayer(fileName string, fileFormat string) (AudioPlayer, error) {
 	var fileFmt string
 	if fileFormat != "" {
