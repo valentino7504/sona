@@ -4,6 +4,7 @@ package decoding
 import (
 	"fmt"
 	"io"
+	"strings"
 )
 
 // AudioDecoder defines an interface for decoding various audio formats
@@ -16,15 +17,15 @@ type AudioDecoder interface {
 //
 // It takes the format as a string parameter and returns an [AudioDecoder] or an error
 // for unrecognised and unsuppported format types.
-func NewAudioDecoder(format string) (AudioDecoder, error) {
+func NewAudioDecoder(fileFormat string) (AudioDecoder, error) {
 	var decoder AudioDecoder
-	switch format {
+	switch strings.ToLower(fileFormat) {
 	case "mp3":
 		decoder = &Mp3Decoder{}
 	case "":
 		return nil, fmt.Errorf("no audio format provided")
 	default:
-		return nil, fmt.Errorf("unrecognised/unsupported audio format: %s", format)
+		return nil, fmt.Errorf("unrecognised/unsupported audio format: %s", fileFormat)
 	}
 	return decoder, nil
 }
