@@ -10,7 +10,7 @@ import (
 // AudioDecoder defines an interface for decoding various audio formats
 type AudioDecoder interface {
 	// Decode converts the digital bitstream/format to [io.Reader] for the oto backend.
-	Decode(fileName string) (io.Reader, error)
+	Decode(fileName string) (io.Reader, int, error)
 }
 
 // NewAudioDecoder creates a new [AudioDecoder] based on the format of the audio input.

@@ -17,15 +17,15 @@ type Mp3Decoder struct{}
 //
 // It takes the file name as a string parameter and returns an [io.Reader] and any error
 // encountered while decoding.
-func (decoder *Mp3Decoder) Decode(fileName string) (io.Reader, error) {
+func (decoder *Mp3Decoder) Decode(fileName string) (io.Reader, int, error) {
 	fileBytes, err := os.ReadFile(fileName)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read file %s: %v", fileName, err.Error())
+		return nil, -1, fmt.Errorf("failed to read file %s: %v", fileName, err.Error())
 	}
 	bytesReader := bytes.NewReader(fileBytes)
 	decodedMp3, err := mp3.NewDecoder(bytesReader)
 	if err != nil {
-		return nil, fmt.Errorf("failed to decode mp3 file %s: %v", fileName, err.Error())
+		return nil, -1, fmt.Errorf("failed to decode mp3 file %s: %v", fileName, err.Error())
 	}
-	return decodedMp3, nil
+	return decodedMp3, decodedMp3.SampleRate(), nil
 }
