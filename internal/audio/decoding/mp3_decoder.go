@@ -19,12 +19,12 @@ type Mp3Decoder struct{}
 func (decoder *Mp3Decoder) Decode(fileName string) (*DecodedAudio, error) {
 	fileBytes, err := os.ReadFile(fileName)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read file %s: %v", fileName, err.Error())
+		return nil, fmt.Errorf("read file: %w", err)
 	}
 	bytesReader := bytes.NewReader(fileBytes)
 	decodedMp3, err := mp3.NewDecoder(bytesReader)
 	if err != nil {
-		return nil, fmt.Errorf("failed to decode mp3 file %s: %v", fileName, err.Error())
+		return nil, fmt.Errorf("decode mp3: %w", err)
 	}
 	return &DecodedAudio{
 		SampleRate: decodedMp3.SampleRate(),

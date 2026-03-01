@@ -38,7 +38,7 @@ func NewAudioDecoder(fileFormat string) (AudioDecoder, error) {
 	case "mp3":
 		decoder = &Mp3Decoder{}
 	case "":
-		return nil, fmt.Errorf("no audio format provided")
+		return nil, fmt.Errorf("unable to detect audio format")
 	default:
 		return nil, fmt.Errorf("unrecognised/unsupported audio format: %s", fileFormat)
 	}
