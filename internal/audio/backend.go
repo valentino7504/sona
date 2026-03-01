@@ -2,8 +2,10 @@ package audio
 
 import "github.com/valentino7504/sona/internal/audio/decoding"
 
+// AudioPlayer is the interface exposed to the frontend for basic audio controlling.
 type AudioPlayer interface {
-	Play()
+	Play() // plays the requested audio
+	// TODO - Pause(), Seek(time), Stop()
 }
 
 // NewAudioPlayer accepts filename and an optional format parameter for creating an audio player
