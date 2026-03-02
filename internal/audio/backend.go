@@ -9,7 +9,8 @@ import (
 // AudioPlayer is the interface exposed to the frontend for basic audio controlling.
 type AudioPlayer interface {
 	Play() // plays the requested audio
-	// TODO - Pause(), Seek(time), Stop()
+	Stop() // stops the audio playing
+	// TODO - Pause(), Seek(time)
 }
 
 // NewAudioPlayer accepts filename and an optional format parameter for creating an audio player

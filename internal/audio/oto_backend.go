@@ -22,6 +22,11 @@ func (ob *OtoBackend) Play() {
 	}
 }
 
+func (ob *OtoBackend) Stop() {
+	// oto does not have a Stop functionality and Close is deprecated
+	ob.player.Pause()
+}
+
 // convertOptions translates system contextOptions to oto ContextOptions for creation of
 // new audio context with oto.NewContext.
 func convertOptions(ctxOpts contextOptions) *oto.NewContextOptions {
