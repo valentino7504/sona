@@ -52,10 +52,6 @@ func main() {
 	}()
 
 	<-ctx.Done()
-	cleanup(player)
-}
-
-func cleanup(player audio.AudioPlayer) {
 	ui.Stop()
 	player.Stop()
 }
