@@ -6,6 +6,7 @@ require (
 	github.com/ebitengine/oto/v3 v3.4.0
 	github.com/hajimehoshi/go-mp3 v0.3.4
 	golang.org/x/term v0.40.0
+	gonum.org/v1/gonum v0.17.0
 )
 
 require (
