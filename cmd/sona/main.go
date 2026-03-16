@@ -24,7 +24,7 @@ func main() {
 		os.Exit(1)
 	}
 	fileName := os.Args[1]
-	player, err := audio.NewAudioPlayer(fileName, "")
+	player, visualizerData, err := audio.NewAudioPlayer(fileName, "")
 	if err != nil {
 		fmt.Println("unable to play the audio provided:", err.Error())
 		os.Exit(1)
@@ -44,6 +44,7 @@ func main() {
 	}()
 	go func() {
 		player.Play()
+		player.Close()
 	}()
 	go func() {
 		for range input {

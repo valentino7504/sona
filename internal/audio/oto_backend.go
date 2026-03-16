@@ -10,8 +10,9 @@ import (
 
 // Implementation of the AudioPlayer interface for oto
 type OtoBackend struct {
-	context *oto.Context
-	player  *oto.Player
+	context    *oto.Context
+	player     *oto.Player
+	pipeWriter *io.PipeWriter
 }
 
 // Play calls the oto.Player.Play method and sleeps until the song finishes playing.
@@ -22,8 +23,11 @@ func (ob *OtoBackend) Play() {
 	}
 }
 
-func (ob *OtoBackend) Stop() {
-	// oto does not have a Stop functionality and Close is deprecated
+func (ob *OtoBackend) Close() {
+	ob.pipeWriter.Close()
+}
+
+func (ob *OtoBackend) Pause() {
 	ob.player.Pause()
 }
 
