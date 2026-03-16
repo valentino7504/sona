@@ -47,6 +47,9 @@ func (data *VisualizerData) byteDepth() int {
 // the size of this portion is determined by the number of audio channels, the
 // byte depth of the pcm data and the size of a frame of pcm data, usually 1024.
 func (data *VisualizerData) readFrame(frameSize int) ([]byte, error) {
+	// the number of  bytes to be read is determined by the no of channels and format.
+	// if it is 16 bit audio it will be 2 bytes per sample, and if 2 channels then 2
+	// bytes per sample per channel so 2*2*noSamples
 	readBytes := make([]byte, data.Channels*frameSize*data.byteDepth())
 	if _, err := io.ReadFull(data.PcmReader, readBytes); err != nil {
 		if errors.Is(err, io.ErrUnexpectedEOF) {
@@ -57,7 +60,7 @@ func (data *VisualizerData) readFrame(frameSize int) ([]byte, error) {
 	return readBytes, nil
 }
 
-// bytesToSamples converts the pcm data to float64 data.
+// bytesToSamples converts the frame of pcm data to float64 data.
 //
 // This is needed as FFT can only be performed on 64 bit float numbers.
 func (data *VisualizerData) bytesToSamples(raw []byte) []float64 {

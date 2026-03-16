@@ -22,8 +22,8 @@ func applyHann(samples []float64) []float64 {
 	return windowed
 }
 
-// computeFFTMags computes fft for an array of samples. should be used after hann
-// smoothing and overlapping (probably when I am able to get this working.
+// computeFFTMags computes magnitude of fft for an array of samples. Should be used after hann
+// smoothing and overlapping (probably when I am able to get this working).
 // It returns the magnitudes of the FFT values, since that is all I need for visualization.
 func computeFFTMags(samples []float64) []float64 {
 	n := len(samples)
