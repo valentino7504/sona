@@ -87,3 +87,18 @@ func (data *Visualizer) bytesToSamples(raw []byte) []float64 {
 	}
 	return output
 }
+
+func (data *Visualizer) Start(ch chan []float64) {
+	for {
+		pcmFrame, err := data.readFrame(1024)
+		if err == io.EOF || pcmFrame == nil {
+			break
+		}
+		samples := data.bytesToSamples(pcmFrame)
+		fftVals := computeFFTMags(applyHann(samples))
+		ch <- getBins(fftVals)
+		if err != nil {
+			break
+		}
+	}
+}
