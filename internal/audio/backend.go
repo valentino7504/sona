@@ -13,6 +13,7 @@ type AudioPlayer interface {
 	Play()  // plays the requested audio
 	Pause() // pauses the audio playing
 	Close()
+	Stop()
 }
 
 // NewAudioPlayer accepts filename and an optional format parameter for creating an audio player
@@ -41,5 +42,6 @@ func NewAudioPlayer(fileName string, fileFormat string) (AudioPlayer, *visualize
 	if err != nil {
 		return nil, nil, fmt.Errorf("initialize oto backend: %w", err)
 	}
+	otoBackend.pipeWriter = pipeWriter
 	return otoBackend, visualizer.NewVisualizer(pipeReader, decodedAudio), nil
 }

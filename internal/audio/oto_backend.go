@@ -24,10 +24,14 @@ func (ob *OtoBackend) Play() {
 }
 
 func (ob *OtoBackend) Close() {
-	ob.pipeWriter.Close()
+	_ = ob.pipeWriter.Close()
 }
 
 func (ob *OtoBackend) Pause() {
+	ob.player.Pause()
+}
+
+func (ob *OtoBackend) Stop() {
 	ob.player.Pause()
 }
 
