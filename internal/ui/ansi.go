@@ -4,7 +4,7 @@ import "fmt"
 
 const CSI = "\033["
 
-func clearScreen() string {
+func clr() string {
 	return (CSI + "2J\033[H")
 }
 
@@ -36,5 +36,5 @@ func cursorHome() string {
 }
 
 func moveCursorTo(x int, y int) string {
-	return fmt.Sprintf(CSI+"%d;%dH", x, y)
+	return fmt.Sprintf(CSI+"%d;%dH", y, x)
 }

@@ -13,12 +13,13 @@ type AudioPlayer interface {
 	Play()  // plays the requested audio
 	Pause() // pauses the audio playing
 	Close()
+	Stop()
 }
 
 // NewAudioPlayer accepts filename and an optional format parameter for creating an audio player
 // backend for use and a visualizer data struct for use by the visualizer. For now it defaults to
 // oto for player. Will extend later.
-func NewAudioPlayer(fileName string, fileFormat string) (AudioPlayer, *visualizer.VisualizerData, error) {
+func NewAudioPlayer(fileName string, fileFormat string) (AudioPlayer, *visualizer.Visualizer, error) {
 	fileFmt := fileFormat
 	if fileFmt == "" {
 		fileFmt = extractFileFormat(fileName)
@@ -41,5 +42,6 @@ func NewAudioPlayer(fileName string, fileFormat string) (AudioPlayer, *visualize
 	if err != nil {
 		return nil, nil, fmt.Errorf("initialize oto backend: %w", err)
 	}
-	return otoBackend, visualizer.NewVisualizerData(pipeReader, decodedAudio), nil
+	otoBackend.pipeWriter = pipeWriter
+	return otoBackend, visualizer.NewVisualizer(pipeReader, decodedAudio), nil
 }

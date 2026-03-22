@@ -26,7 +26,7 @@ func drawStatic() {
 	barBottomRow = trackInfoRow - 2
 	draw(
 		showCursor(false),
-		clearScreen(),
+		clr(),
 		header(),
 		horizontalBar(),
 		moveCursorDown(barHeight),
@@ -39,4 +39,8 @@ func drawStatic() {
 
 func resetCursor() {
 	draw(showCursor(true))
+}
+
+func clearScreen() {
+	draw(clr())
 }

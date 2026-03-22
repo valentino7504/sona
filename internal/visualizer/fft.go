@@ -7,7 +7,7 @@ import (
 	"gonum.org/v1/gonum/dsp/fourier"
 )
 
-const NO_BARS = 16
+const NO_BARS = 32
 
 // applyHann applies the Hann smoothing function to an array of samples to reduce
 // spectral leakage and ensure that the visualizer does not jitter. frameSize is

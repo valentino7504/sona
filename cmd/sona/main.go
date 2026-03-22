@@ -24,11 +24,16 @@ func main() {
 		os.Exit(1)
 	}
 	fileName := os.Args[1]
-	player, visualizerData, err := audio.NewAudioPlayer(fileName, "")
+	player, visualizer, err := audio.NewAudioPlayer(fileName, "")
 	if err != nil {
 		fmt.Println("unable to play the audio provided:", err.Error())
 		os.Exit(1)
 	}
+
+	// create a channel for the frequency bins and start sending values down
+	bins := make(chan []float64, 1)
+	go visualizer.Start(bins)
+
 	// create a context that is cancelled when sigterm is received
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGTERM)
 	defer cancel()
@@ -40,10 +45,11 @@ func main() {
 		// calling cancel() closes ctx.Done() which unblocks it, hence the passing to Start so
 		// I can shutdown the app from there depending on if the user inputs q or any of the
 		// exit keys such as ctrl c or ctrl d
-		ui.Start(cancel, input)
+		ui.Start(cancel, input, bins)
 	}()
 	go func() {
 		player.Play()
+		cancel()
 		player.Close()
 	}()
 	go func() {
@@ -54,5 +60,4 @@ func main() {
 
 	<-ctx.Done()
 	ui.Stop()
-	player.Stop()
 }

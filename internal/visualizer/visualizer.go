@@ -9,18 +9,18 @@ import (
 	"github.com/valentino7504/sona/internal/audio/decoding"
 )
 
-type VisualizerData struct {
+type Visualizer struct {
 	PcmReader  io.Reader
 	SampleRate int
 	BitDepth   decoding.BitDepth
 	Channels   int
 }
 
-// NewVisualizerData creates a new [visualizer.VisualizerData] based on the decoded audio
+// NewVisualizer creates a new [visualizer.VisualizerData] based on the decoded audio
 //
 // It takes in the pcm reader to be assigned to the new visualizer and the decoded audio.
-func NewVisualizerData(pcmReader io.Reader, da *decoding.DecodedAudio) *VisualizerData {
-	return &VisualizerData{
+func NewVisualizer(pcmReader io.Reader, da *decoding.DecodedAudio) *Visualizer {
+	return &Visualizer{
 		SampleRate: da.SampleRate,
 		BitDepth:   da.BitDepth,
 		Channels:   da.Channels,
@@ -29,7 +29,7 @@ func NewVisualizerData(pcmReader io.Reader, da *decoding.DecodedAudio) *Visualiz
 }
 
 // byteDepth just converts the number of bits in the bit depth to bytes
-func (data *VisualizerData) byteDepth() int {
+func (data *Visualizer) byteDepth() int {
 	switch data.BitDepth {
 	case decoding.Format16BitInt:
 		return 2
@@ -46,7 +46,7 @@ func (data *VisualizerData) byteDepth() int {
 //
 // the size of this portion is determined by the number of audio channels, the
 // byte depth of the pcm data and the size of a frame of pcm data, usually 1024.
-func (data *VisualizerData) readFrame(frameSize int) ([]byte, error) {
+func (data *Visualizer) readFrame(frameSize int) ([]byte, error) {
 	// the number of  bytes to be read is determined by the no of channels and format.
 	// if it is 16 bit audio it will be 2 bytes per sample, and if 2 channels then 2
 	// bytes per sample per channel so 2*2*noSamples
@@ -63,7 +63,7 @@ func (data *VisualizerData) readFrame(frameSize int) ([]byte, error) {
 // bytesToSamples converts the frame of pcm data to float64 data.
 //
 // This is needed as FFT can only be performed on 64 bit float numbers.
-func (data *VisualizerData) bytesToSamples(raw []byte) []float64 {
+func (data *Visualizer) bytesToSamples(raw []byte) []float64 {
 	bd := data.byteDepth()
 	bytesPerStep := bd * data.Channels
 	output := make([]float64, len(raw)/bytesPerStep)
@@ -86,4 +86,19 @@ func (data *VisualizerData) bytesToSamples(raw []byte) []float64 {
 		output[i/bytesPerStep] = sample
 	}
 	return output
+}
+
+func (data *Visualizer) Start(ch chan []float64) {
+	for {
+		pcmFrame, err := data.readFrame(1024)
+		if err == io.EOF || pcmFrame == nil {
+			break
+		}
+		samples := data.bytesToSamples(pcmFrame)
+		fftVals := computeFFTMags(applyHann(samples))
+		ch <- getBins(fftVals)
+		if err != nil {
+			break
+		}
+	}
 }
