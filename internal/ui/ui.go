@@ -16,7 +16,7 @@ const (
 	SPC    = 32
 )
 
-func Start(cancel context.CancelFunc, input chan rune) {
+func Start(cancel context.CancelFunc, input chan rune, bins chan []float64) {
 	var err error
 	prevState, err = term.MakeRaw(int(os.Stdin.Fd()))
 	if err != nil {
@@ -26,6 +26,13 @@ func Start(cancel context.CancelFunc, input chan rune) {
 	defer Stop()
 	reader := bufio.NewReader(os.Stdin)
 	var char rune
+
+	go func() {
+		for binVals := range bins {
+			drawBars(binVals)
+		}
+	}()
+
 	for {
 		char, _, err = reader.ReadRune()
 		if err != nil {
@@ -47,5 +54,6 @@ func Start(cancel context.CancelFunc, input chan rune) {
 
 func Stop() {
 	resetCursor()
+	clearScreen()
 	_ = term.Restore(int(os.Stdin.Fd()), prevState)
 }
