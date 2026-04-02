@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"os"
+	"time"
 
 	"golang.org/x/term"
 )
@@ -16,7 +17,12 @@ const (
 	SPC    = 32
 )
 
-func Start(cancel context.CancelFunc, input chan rune, bins chan []float64) {
+type FileData struct {
+	FileName string
+	Duration time.Duration
+}
+
+func Start(cancel context.CancelFunc, input chan rune, bins chan []float64, fileData FileData) {
 	var err error
 	prevState, err = term.MakeRaw(int(os.Stdin.Fd()))
 	if err != nil {
