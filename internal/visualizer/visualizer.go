@@ -28,20 +28,6 @@ func NewVisualizer(pcmReader io.Reader, da *decoding.DecodedAudio) *Visualizer {
 	}
 }
 
-// byteDepth just converts the number of bits in the bit depth to bytes
-func (data *Visualizer) byteDepth() int {
-	switch data.BitDepth {
-	case decoding.Format16BitInt:
-		return 2
-	case decoding.Format32BitFloat:
-		return 4
-	case decoding.FormatUnsigned8BitInt:
-		return 1
-	default:
-		panic("cannot determine bit depth")
-	}
-}
-
 // readFrame reads a portion of pcm data for the fast fourier transform.
 //
 // the size of this portion is determined by the number of audio channels, the
@@ -50,7 +36,7 @@ func (data *Visualizer) readFrame(frameSize int) ([]byte, error) {
 	// the number of  bytes to be read is determined by the no of channels and format.
 	// if it is 16 bit audio it will be 2 bytes per sample, and if 2 channels then 2
 	// bytes per sample per channel so 2*2*noSamples
-	readBytes := make([]byte, data.Channels*frameSize*data.byteDepth())
+	readBytes := make([]byte, data.Channels*frameSize*decoding.ByteDepth(data.BitDepth))
 	if _, err := io.ReadFull(data.PcmReader, readBytes); err != nil {
 		if errors.Is(err, io.ErrUnexpectedEOF) {
 			return readBytes, err
@@ -64,7 +50,7 @@ func (data *Visualizer) readFrame(frameSize int) ([]byte, error) {
 //
 // This is needed as FFT can only be performed on 64 bit float numbers.
 func (data *Visualizer) bytesToSamples(raw []byte) []float64 {
-	bd := data.byteDepth()
+	bd := decoding.ByteDepth(data.BitDepth)
 	bytesPerStep := bd * data.Channels
 	output := make([]float64, len(raw)/bytesPerStep)
 	for i := 0; i < len(raw); i += bytesPerStep {

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"strings"
+	"time"
 )
 
 type BitDepth int
@@ -15,17 +16,32 @@ const (
 	FormatUnsigned8BitInt
 )
 
-// AudioDecoder defines an interface for decoding various audio formats
-type AudioDecoder interface {
-	// Decode converts the digital bitstream/format to [io.Reader] for the oto backend.
-	Decode(fileName string) (*DecodedAudio, error)
-}
-
 type DecodedAudio struct {
 	SampleRate int
 	BitDepth   BitDepth
 	Channels   int
 	Data       io.Reader
+	Duration   time.Duration
+}
+
+// ByteDepth just converts the number of bits in the bit depth to bytes
+func ByteDepth(bitDepth BitDepth) int {
+	switch bitDepth {
+	case Format16BitInt:
+		return 2
+	case Format32BitFloat:
+		return 4
+	case FormatUnsigned8BitInt:
+		return 1
+	default:
+		panic("cannot determine bit depth")
+	}
+}
+
+// AudioDecoder defines an interface for decoding various audio formats
+type AudioDecoder interface {
+	// Decode converts the digital bitstream/format to [io.Reader] for the oto backend.
+	Decode(fileName string) (*DecodedAudio, error)
 }
 
 // NewAudioDecoder creates a new [AudioDecoder] based on the format of the audio input.
