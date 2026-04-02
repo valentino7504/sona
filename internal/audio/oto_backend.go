@@ -13,6 +13,7 @@ type OtoBackend struct {
 	context    *oto.Context
 	player     *oto.Player
 	pipeWriter *io.PipeWriter
+	duration   time.Duration
 }
 
 // Play calls the oto.Player.Play method and sleeps until the song finishes playing.
@@ -33,6 +34,10 @@ func (ob *OtoBackend) Pause() {
 
 func (ob *OtoBackend) Stop() {
 	ob.player.Pause()
+}
+
+func (ob *OtoBackend) Duration() time.Duration {
+	return ob.duration
 }
 
 // convertOptions translates system contextOptions to oto ContextOptions for creation of
@@ -58,12 +63,12 @@ func convertOptions(ctxOpts contextOptions) *oto.NewContextOptions {
 // interface.
 //
 // It waits for the audio device to be ready and proceeds to create a new oto.Player.
-func NewOtoBackend(decoded io.Reader, opts contextOptions) (*OtoBackend, error) {
+func NewOtoBackend(decoded io.Reader, duration time.Duration, opts contextOptions) (*OtoBackend, error) {
 	ctx, ready, err := oto.NewContext(convertOptions(opts))
 	if err != nil {
 		return nil, err
 	}
 	<-ready
 	player := ctx.NewPlayer(decoded)
-	return &OtoBackend{context: ctx, player: player}, nil
+	return &OtoBackend{context: ctx, player: player, duration: duration}, nil
 }

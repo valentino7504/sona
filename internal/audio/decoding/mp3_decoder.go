@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/hajimehoshi/go-mp3"
 )
@@ -31,5 +32,8 @@ func (decoder *Mp3Decoder) Decode(fileName string) (*DecodedAudio, error) {
 		BitDepth:   Format16BitInt,
 		Channels:   2,
 		Data:       decodedMp3,
+		Duration: time.Duration(
+			decodedMp3.Length()/int64(2*ByteDepth(Format16BitInt)*decodedMp3.SampleRate()),
+		) * time.Second,
 	}, nil
 }

@@ -3,6 +3,7 @@ package audio
 import (
 	"fmt"
 	"io"
+	"time"
 
 	"github.com/valentino7504/sona/internal/audio/decoding"
 	"github.com/valentino7504/sona/internal/visualizer"
@@ -14,6 +15,7 @@ type AudioPlayer interface {
 	Pause() // pauses the audio playing
 	Close()
 	Stop()
+	Duration() time.Duration // returns the duration of the song
 }
 
 // NewAudioPlayer accepts filename and an optional format parameter for creating an audio player
@@ -38,7 +40,11 @@ func NewAudioPlayer(fileName string, fileFormat string) (AudioPlayer, *visualize
 		withBitDepth(decodedAudio.BitDepth),
 	)
 	pipeReader, pipeWriter := io.Pipe()
-	otoBackend, err := NewOtoBackend(io.TeeReader(decodedAudio.Data, pipeWriter), ctxOpts)
+	otoBackend, err := NewOtoBackend(
+		io.TeeReader(decodedAudio.Data, pipeWriter),
+		decodedAudio.Duration,
+		ctxOpts,
+	)
 	if err != nil {
 		return nil, nil, fmt.Errorf("initialize oto backend: %w", err)
 	}

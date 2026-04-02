@@ -45,7 +45,7 @@ func main() {
 		// calling cancel() closes ctx.Done() which unblocks it, hence the passing to Start so
 		// I can shutdown the app from there depending on if the user inputs q or any of the
 		// exit keys such as ctrl c or ctrl d
-		ui.Start(cancel, input, bins)
+		ui.Start(cancel, input, bins, ui.FileData{FileName: fileName, Duration: player.Duration()})
 	}()
 	go func() {
 		player.Play()
